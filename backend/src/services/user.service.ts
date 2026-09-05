@@ -16,36 +16,36 @@ export class UserService {
       if (existingEmail) throw new Error('Email sudah digunakan');
     }
 
-    const id = uuidv4();
+    const uuid = uuidv4();
     const hashedPassword = await bcrypt.hash(dto.password, 10);
 
-    return await this.userRepository.create(id, dto, hashedPassword);
+    return await this.userRepository.create(uuid, dto, hashedPassword);
   }
 
   async getAllUsers() {
     return await this.userRepository.findAll();
   }
 
-  async getUserById(id: string) {
-    const user = await this.userRepository.findById(id);
+  async getUserByUuid(uuid: string) {
+    const user = await this.userRepository.findByUuid(uuid);
     if (!user) throw new Error('User tidak ditemukan');
     return user;
   }
 
-  async updateUser(id: string, dto: UpdateUserDTO) {
+  async updateUser(uuid: string, dto: UpdateUserDTO) {
     let hashedPassword: string | undefined;
 
     if (dto.password) {
       hashedPassword = await bcrypt.hash(dto.password, 10);
     }
 
-    const updated = await this.userRepository.update(id, dto, hashedPassword);
+    const updated = await this.userRepository.update(uuid, dto, hashedPassword);
     if (!updated) throw new Error('User tidak ditemukan');
     return updated;
   }
 
-  async deleteUser(id: string) {
-    const isDeleted = await this.userRepository.softDelete(id);
+  async deleteUser(uuid: string) {
+    const isDeleted = await this.userRepository.softDelete(uuid);
     if (!isDeleted) throw new Error('User tidak ditemukan');
     return true;
   }

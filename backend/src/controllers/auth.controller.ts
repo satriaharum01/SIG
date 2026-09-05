@@ -22,4 +22,23 @@ export class AuthController {
 
     }
 
+    static async resetPassword(req: Request, res: Response) {
+        try {
+            const { username, newPassword } = req.body;
+
+            if (!username || !newPassword) {
+                return res.status(400).json({
+                    message: "Username dan newPassword wajib diisi"
+                });
+            }
+
+            const result = await AuthService.resetPassword(username, newPassword);
+            return res.status(200).json(result);
+
+        } catch (error: any) {
+            return res.status(400).json({
+                message: error.message || "Gagal mengubah password"
+            });
+        }
+    }
 }

@@ -1,0 +1,1 @@
+export default function PromoBanner() { return <div className="promo-banner-card"><h3 className="promo-title">Level up your sales managing to the next level.</h3><p className="promo-desc">An easy way to manage sales with care and precision.</p><button className="btn-promo">Check the updates now</button></div>; }

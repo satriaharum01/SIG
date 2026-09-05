@@ -1,0 +1,3 @@
+export default function Footer() {
+  return <footer className="footer-custom"><div className="footer-left"><span className="footer-logo"><i className="bi bi-asterisk" /> Spark Admin</span><span className="footer-separator">|</span><span className="footer-copy">© 2026 Made with <i className="bi bi-heart-fill text-danger footer-heart" /> by Spark Admin • Distributed by ThemeWagon</span></div><div className="footer-right"><ul className="footer-links"><li><a href="#" className="footer-link">Overview</a></li><li><a href="#" className="footer-link">Statistics</a></li><li><a href="#" className="footer-link">Help & Documentation</a></li><li><a href="#" className="footer-link">Status <span className="status-dot" /></a></li></ul></div></footer>;
+}

@@ -4,14 +4,14 @@ import { IUser } from '../interfaces/user.interface.js';
 import { CreateUserDTO, UpdateUserDTO } from '../dto/user.dto.js';
 
 export class UserRepository {
-  async create(id: string, dto: CreateUserDTO, hashedPassword: string): Promise<IUser | null> {
+  async create(uuid: string, dto: CreateUserDTO, hashedPassword: string): Promise<IUser | null> {
     const query = `
-      INSERT INTO users (id, role_id, fullname, username, email, password, phone, avatar, is_active)
+      INSERT INTO users (uuid, role_uuid, fullname, username, email, password, phone, avatar, is_active)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
     `;
     await db.query<ResultSetHeader>(query, [
-      id,
-      dto.role_id,
+      uuid,
+      dto.role_uuid,
       dto.fullname,
       dto.username,
       dto.email || null,
@@ -21,19 +21,19 @@ export class UserRepository {
       dto.is_active ?? 1,
     ]);
 
-    return this.findById(id);
+    return this.findByUuid(uuid);
   }
 
   async findAll(): Promise<IUser[]> {
     // Mengabaikan user yang di-soft-delete (deleted_at IS NULL)
-    const query = 'SELECT id, role_id, fullname, username, email, phone, avatar, is_active, created_at, updated_at FROM users WHERE deleted_at IS NULL ORDER BY created_at DESC';
+    const query = 'SELECT uuid, role_uuid, fullname, username, email, phone, avatar, is_active, created_at, updated_at FROM users WHERE deleted_at IS NULL ORDER BY created_at DESC';
     const [rows] = await db.query<RowDataPacket[] & IUser[]>(query);
     return rows;
   }
 
-  async findById(id: string): Promise<IUser | null> {
-    const query = 'SELECT id, role_id, fullname, username, email, phone, avatar, is_active, created_at, updated_at FROM users WHERE id = ? AND deleted_at IS NULL';
-    const [rows] = await db.query<RowDataPacket[] & IUser[]>(query, [id]);
+  async findByUuid(uuid: string): Promise<IUser | null> {
+    const query = 'SELECT uuid, role_uuid, fullname, username, email, phone, avatar, is_active, created_at, updated_at FROM users WHERE uuid = ? AND deleted_at IS NULL';
+    const [rows] = await db.query<RowDataPacket[] & IUser[]>(query, [uuid]);
     return rows[0] || null;
   }
 
@@ -44,18 +44,18 @@ export class UserRepository {
     return rows[0] || null;
   }
 
-  async update(id: string, dto: UpdateUserDTO, hashedPassword?: string): Promise<IUser | null> {
-    const currentUser = await this.findById(id);
+  async update(uuid: string, dto: UpdateUserDTO, hashedPassword?: string): Promise<IUser | null> {
+    const currentUser = await this.findByUuid(uuid);
     if (!currentUser) return null;
 
     const query = `
       UPDATE users 
-      SET role_id = ?, fullname = ?, username = ?, email = ?, password = ?, phone = ?, avatar = ?, is_active = ?
-      WHERE id = ? AND deleted_at IS NULL
+      SET role_uuid = ?, fullname = ?, username = ?, email = ?, password = ?, phone = ?, avatar = ?, is_active = ?
+      WHERE uuid = ? AND deleted_at IS NULL
     `;
 
     await db.query<ResultSetHeader>(query, [
-      dto.role_id ?? currentUser.role_id,
+      dto.role_uuid ?? currentUser.role_uuid,
       dto.fullname ?? currentUser.fullname,
       dto.username ?? currentUser.username,
       dto.email ?? currentUser.email,
@@ -63,15 +63,15 @@ export class UserRepository {
       dto.phone ?? currentUser.phone,
       dto.avatar ?? currentUser.avatar,
       dto.is_active ?? currentUser.is_active,
-      id,
+      uuid,
     ]);
 
-    return this.findById(id);
+    return this.findByUuid(uuid);
   }
 
-  async softDelete(id: string): Promise<boolean> {
-    const query = 'UPDATE users SET deleted_at = CURRENT_TIMESTAMP() WHERE id = ? AND deleted_at IS NULL';
-    const [result] = await db.query<ResultSetHeader>(query, [id]);
+  async softDelete(uuid: string): Promise<boolean> {
+    const query = 'UPDATE users SET deleted_at = CURRENT_TIMESTAMP() WHERE uuid = ? AND deleted_at IS NULL';
+    const [result] = await db.query<ResultSetHeader>(query, [uuid]);
     return result.affectedRows > 0;
   }
 }

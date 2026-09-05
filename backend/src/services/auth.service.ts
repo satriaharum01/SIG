@@ -10,13 +10,13 @@ export class AuthService {
         const [rows]: any = await pool.query(
             `
             SELECT
-                u.id,
+                u.uuid,
                 u.username,
                 u.password,
-                r.code AS role
+                r.name AS role
             FROM users u
             JOIN roles r
-            ON r.id=u.role_id
+            ON r.uuid=u.role_uuid
             WHERE u.username=?
             LIMIT 1
             `,
@@ -37,7 +37,7 @@ export class AuthService {
 
         const token = jwt.sign(
             {
-                id: user.id,
+                uuid: user.uuid,
                 role: user.role
             },
             env.JWT_SECRET,
@@ -53,6 +53,32 @@ export class AuthService {
             user
         };
 
+    }
+
+    static async resetPassword(username: string, newPassword: string) {
+        // 1. Cek apakah username ada
+        const [rows]: any = await pool.query(
+            `SELECT id FROM users WHERE username = ? LIMIT 1`,
+            [username]
+        );
+
+        if (rows.length === 0) {
+            throw new Error("Username tidak ditemukan");
+        }
+
+        // 2. Hash password baru
+        const saltRounds = 10;
+        const hashedPassword = await bcrypt.hash(newPassword, saltRounds);
+
+        // 3. Update password ke database
+        await pool.query(
+            `UPDATE users SET password = ? WHERE username = ?`,
+            [hashedPassword, username]
+        );
+
+        return {
+            message: "Password berhasil diperbarui"
+        };
     }
 
 }

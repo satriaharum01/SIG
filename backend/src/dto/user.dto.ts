@@ -1,5 +1,5 @@
 export interface CreateUserDTO {
-    role_id: string;
+    role_uuid: string;
     fullname: string;
     username: string;
     email?: string;
@@ -10,7 +10,7 @@ export interface CreateUserDTO {
   }
   
   export interface UpdateUserDTO {
-    role_id?: string;
+    role_uuid?: string;
     fullname?: string;
     username?: string;
     email?: string;
