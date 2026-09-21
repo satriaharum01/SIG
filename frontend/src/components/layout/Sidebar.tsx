@@ -18,7 +18,7 @@ export default function Sidebar({ isOpen, onClose }) {
       <aside className={`sidebar-wrapper ${isOpen ? "show" : ""}`} id="sidebar">
         <NavLink to="/dashboard" className="sidebar-brand" onClick={onClose}>
           <i className="bi bi-asterisk" />
-          <span>Tarigan Gadai</span>
+          <span>Budi Gadai</span>
         </NavLink>
 
         {/* Render Menu Berdasarkan Section & Items */}
